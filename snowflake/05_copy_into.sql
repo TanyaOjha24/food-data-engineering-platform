@@ -30,7 +30,7 @@ ORDER BY t;
 -- Expect: orders = 10,000,000 · order_items ≈ 23,000,000 · restaurants ≈ 148,541 ...
 
 -- ---------------------------------------------------------------------
--- OPTIONAL — auto-ingest new files with Snowpipe (teach this on camera):
+-- OPTIONAL — auto-ingest new files with Snowpipe.
 -- CREATE PIPE RAW.orders_pipe AUTO_INGEST = TRUE AS
 --   COPY INTO RAW.orders FROM @ZOMATO_RAW_STAGE/orders/;
 -- then wire the pipe's SQS ARN to an S3 event notification.
