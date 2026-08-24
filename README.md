@@ -115,13 +115,10 @@ The platform uses a layered ELT architecture with **Amazon S3, Snowflake, dbt, a
 
 dbt manages dependencies across staging models, dimensions, facts, and business-facing marts.
 
-![Fork AI dbt Lineage](docs/dbt-lineage.png)
-
----
+![Fork AI dbt Lineage](docs/dbt-lineage.png.png)---
 
 ### Airflow Orchestration
 
 Apache Airflow orchestrates the pipeline, including raw data loading, dbt transformations, and AI enrichment.
 
-![Fork AI Airflow DAG](docs/airflow-dag.png)
-
+![Fork AI Airflow DAG](docs/zomato_batch-graph.png)
