@@ -17,3 +17,11 @@ data/
 
 # RAG generated cache
 ai/review_embeddings.parquet 
+
+
+# Local dbt files
+dbt/**/profiles.yml
+dbt/**/.user.yml
+
+dbt/**/README.md
+>>>>>>> 5d4b06e (Add unified Streamlit AI app)

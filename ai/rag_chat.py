@@ -23,7 +23,10 @@ CHAT_MODEL = os.getenv(
 NEW_REVIEWS = int(os.getenv("NEW_REVIEWS", "500"))
 TOP_K = int(os.getenv("TOP_K", "5"))
 
-CACHE_FILE = "review_embeddings.parquet"
+'''CACHE_FILE = "review_embeddings.parquet"'''
+from pathlib import Path
+
+CACHE_FILE = Path(__file__).resolve().parent / "review_embeddings.parquet"
 
 
 
@@ -206,58 +209,71 @@ Customer Reviews:
     return response.message.content[0].text
 
 
-# Streamlit UI
+# ---------------------------------------------------------
+# STREAMLIT UI
+# ---------------------------------------------------------
 
-st.title("Chat with your Zomato Reviews")
+def run_rag():
 
-st.caption(
-    f"Searching {NEW_REVIEWS} reviews "
-    f"using {EMBEDDING_MODEL} embeddings "
-    f"and answering with {CHAT_MODEL}"
-)
+    st.title("Chat with your Zomato Reviews")
 
-
-# Load Data
-
-review_df = load_reviews()
-
-
-# User Question
-
-question = st.text_input(
-    "Ask a question about your reviews:",
-    placeholder="e.g. What are the most common complaints about delivery?"
-)
-
-
-# RAG Pipeline
-
-if question:
-
-    top_reviews = find_similar_reviews(
-        question,
-        review_df
+    st.caption(
+        f"Searching {NEW_REVIEWS} reviews "
+        f"using {EMBEDDING_MODEL} embeddings "
+        f"and answering with {CHAT_MODEL}"
     )
 
-    answer = ask_llm(
-        question,
-        top_reviews
+    # ---------------------------------------------------------
+    # LOAD DATA
+    # ---------------------------------------------------------
+
+    review_df = load_reviews()
+
+    # ---------------------------------------------------------
+    # QUESTION
+    # ---------------------------------------------------------
+
+    question = st.text_input(
+        "Ask a question about your reviews:",
+        placeholder=(
+            "e.g. What are the most common complaints "
+            "about delivery?"
+        ),
     )
 
-    st.markdown("**Answer:**")
+    # ---------------------------------------------------------
+    # RAG PIPELINE
+    # ---------------------------------------------------------
 
-    st.write(answer)
+    if question:
 
-    with st.expander("Reviews used to build this answer"):
-
-        st.dataframe(
-            top_reviews[
-                [
-                    "city",
-                    "rating",
-                    "comment",
-                    "score",
-                ]
-            ],
-            hide_index=True,
+        top_reviews = find_similar_reviews(
+            question,
+            review_df,
         )
+
+        answer = ask_llm(
+            question,
+            top_reviews,
+        )
+
+        st.markdown("**Answer:**")
+
+        st.write(answer)
+
+        with st.expander(
+            "Reviews used to build this answer"
+        ):
+
+            st.dataframe(
+                top_reviews[
+                    [
+                        "city",
+                        "rating",
+                        "comment",
+                        "score",
+                    ]
+                ],
+                hide_index=True,
+                use_container_width=True,
+            )

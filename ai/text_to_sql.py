@@ -429,113 +429,101 @@ def run_query(sql):
 # STREAMLIT UI
 # ---------------------------------------------------------
 
-st.set_page_config(
-    page_title="Zomato Text-to-SQL",
-    page_icon="🍽️",
-    layout="wide",
-)
+def run_text_to_sql():
 
+    st.title("Chat with your Zomato Data")
 
-st.title("Chat with your Zomato Data")
+    st.caption(
+        f"Ask in English → {CHAT_MODEL} generates SQL → Snowflake executes it"
+    )
 
-st.caption(
-    f"Ask in English → {CHAT_MODEL} generates SQL → Snowflake executes it"
-)
+    # ---------------------------------------------------------
+    # SIDEBAR
+    # ---------------------------------------------------------
 
+    with st.sidebar:
 
-# ---------------------------------------------------------
-# SIDEBAR
-# ---------------------------------------------------------
+        st.header("Example Questions")
 
-with st.sidebar:
+        for question in EXAMPLE_QUESTIONS:
 
-    st.header("Example Questions")
+            st.markdown(
+                f"- {question}"
+            )
 
-    for question in EXAMPLE_QUESTIONS:
+    # ---------------------------------------------------------
+    # QUESTION
+    # ---------------------------------------------------------
 
-        st.markdown(
-            f"- {question}"
-        )
+    question = st.text_input(
+        "Ask a question about your Zomato data:",
+        placeholder="e.g. What are the top 10 restaurants by revenue?",
+    )
 
+    # ---------------------------------------------------------
+    # PROCESS QUESTION
+    # ---------------------------------------------------------
 
-# ---------------------------------------------------------
-# QUESTION
-# ---------------------------------------------------------
+    if question:
 
-question = st.text_input(
-    "Ask a question about your Zomato data:",
-    placeholder="e.g. What are the top 10 restaurants by revenue?",
-)
+        try:
 
+            # Generate SQL
+            sql = generate_sql(question)
 
-# ---------------------------------------------------------
-# PROCESS QUESTION
-# ---------------------------------------------------------
+            st.subheader("Generated SQL")
 
-if question:
+            st.code(
+                sql,
+                language="sql",
+            )
 
-    try:
+            # Validate SQL
+            safe, error_message = is_safe(sql)
 
-        # Generate SQL
-        sql = generate_sql(question)
+            if not safe:
 
-        st.subheader("Generated SQL")
+                st.error(
+                    f"Query blocked: {error_message}"
+                )
 
-        st.code(
-            sql,
-            language="sql",
-        )
+            else:
 
+                # Execute
+                df = run_query(sql)
 
-        # Validate SQL
-        safe, error_message = is_safe(sql)
+                st.success(
+                    f"{len(df)} rows returned"
+                )
 
-        if not safe:
+                # Results
+                st.subheader("Results")
+
+                st.dataframe(
+                    df,
+                    hide_index=True,
+                    use_container_width=True,
+                )
+
+                # Simple chart
+                if (
+                    len(df.columns) == 2
+                    and len(df) > 0
+                    and pd.api.types.is_numeric_dtype(
+                        df.iloc[:, 1]
+                    )
+                ):
+
+                    st.subheader("Visualization")
+
+                    st.bar_chart(
+                        df,
+                        x=df.columns[0],
+                        y=df.columns[1],
+                    )
+
+        except Exception as e:
 
             st.error(
-                f"Query blocked: {error_message}"
+                f"Error: {e}"
             )
-
-        else:
-
-            # Execute
-            df = run_query(sql)
-
-            st.success(
-                f"{len(df)} rows returned"
-            )
-
-
-            # Results
-            st.subheader("Results")
-
-            st.dataframe(
-                df,
-                hide_index=True,
-                use_container_width=True,
-            )
-
-
-            # Simple chart
-            if (
-                len(df.columns) == 2
-                and len(df) > 0
-                and pd.api.types.is_numeric_dtype(
-                    df.iloc[:, 1]
-                )
-            ):
-
-                st.subheader("Visualization")
-
-                st.bar_chart(
-                    df,
-                    x=df.columns[0],
-                    y=df.columns[1],
-                )
-
-
-    except Exception as e:
-
-        st.error(
-            f"Error: {e}"
-        )
