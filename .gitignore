@@ -16,4 +16,4 @@ __pycache__/
 data/
 
 # RAG generated cache
-ai/review_embeddings.parquet
+review_embeddings.parquet
