@@ -65,7 +65,7 @@ Review data is enriched using an LLM to extract structured insights from unstruc
 
 The RAG pipeline uses review embeddings to retrieve relevant context before generating an answer. This allows responses to be grounded in the underlying review data rather than relying solely on the LLM's general knowledge.
 
-![Fork AI RAG Application](docs/rag-demo.png)
+![Fork AI RAG Application](docs/rag-demo.png.png)
 
 ### 3. Text-to-SQL
 
