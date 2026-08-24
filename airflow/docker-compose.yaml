@@ -26,7 +26,7 @@ x-airflow-common: &airflow-common
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
-    - ../zomato:/opt/airflow/dbt/zomato      # your dbt project
+    - ../dbt/zomato:/opt/airflow/dbt/zomato     # your dbt project   
     - ../ai:/opt/airflow/ai                       # the enrich_reviews.py script
   depends_on:
     postgres:
